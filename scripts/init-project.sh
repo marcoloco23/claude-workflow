@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Claude Workflow Framework - Project Initialization Script
+# AI Workflow Framework - Project Initialization Script
 #
-# This script sets up the claude-workflow framework in a new project.
+# This script sets up the AI workflow framework in a new project.
+# Works with Claude Code, Cursor, GitHub Copilot, Windsurf, and other AI tools.
 #
 # Usage:
 #   ./init-project.sh /path/to/project "Project Name"
@@ -16,6 +17,7 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Get script directory (where the framework lives)
@@ -40,7 +42,9 @@ fi
 # Resolve to absolute path
 TARGET_DIR="$(cd "$TARGET_DIR" 2>/dev/null && pwd || echo "$TARGET_DIR")"
 
-echo -e "${GREEN}Claude Workflow Framework - Project Setup${NC}"
+echo -e "${GREEN}AI Workflow Framework - Project Setup${NC}"
+echo -e "${BLUE}Compatible with: Claude Code, Cursor, Copilot, Windsurf, aider${NC}"
+echo ""
 echo "Target: $TARGET_DIR"
 echo "Project: $PROJECT_NAME"
 echo ""
@@ -88,7 +92,15 @@ copy_direct() {
     echo -e "${GREEN}  Created: $dest${NC}"
 }
 
-echo "Setting up .claude/ directory..."
+# Create core AI context files (work with all tools)
+echo "Creating AI context files..."
+copy_with_placeholders "$FRAMEWORK_DIR/templates/AGENTS.md" "$TARGET_DIR/AGENTS.md"
+copy_with_placeholders "$FRAMEWORK_DIR/templates/CONTINUITY.md" "$TARGET_DIR/CONTINUITY.md"
+copy_with_placeholders "$FRAMEWORK_DIR/templates/PROGRESS.md" "$TARGET_DIR/PROGRESS.md"
+
+# Create Claude-specific files
+echo ""
+echo "Setting up .claude/ directory (Claude Code specific)..."
 mkdir -p "$TARGET_DIR/.claude/agents"
 mkdir -p "$TARGET_DIR/.claude/skills/code-review"
 mkdir -p "$TARGET_DIR/.claude/skills/deploy"
@@ -109,21 +121,18 @@ copy_direct "$FRAMEWORK_DIR/.claude/skills/deploy/SKILL.md" "$TARGET_DIR/.claude
 echo "Copying config files..."
 copy_direct "$FRAMEWORK_DIR/.claude/settings.local.json" "$TARGET_DIR/.claude/settings.local.json"
 copy_with_placeholders "$FRAMEWORK_DIR/.claude/ORCHESTRATOR_PROMPT.md" "$TARGET_DIR/.claude/ORCHESTRATOR_PROMPT.md"
+copy_with_placeholders "$FRAMEWORK_DIR/templates/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
 
 # Set up .plans/ directory
+echo ""
 echo "Setting up .plans/ directory..."
 mkdir -p "$TARGET_DIR/.plans"
 copy_direct "$FRAMEWORK_DIR/.plans/README.md" "$TARGET_DIR/.plans/README.md"
 copy_direct "$FRAMEWORK_DIR/.plans/_TEMPLATE.md" "$TARGET_DIR/.plans/_TEMPLATE.md"
 
-# Copy template files to root
-echo "Creating root config files..."
-copy_with_placeholders "$FRAMEWORK_DIR/templates/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
-copy_with_placeholders "$FRAMEWORK_DIR/templates/CONTINUITY.md" "$TARGET_DIR/CONTINUITY.md"
-
 # Optionally copy ROADMAP.md
 if [ ! -f "$TARGET_DIR/ROADMAP.md" ]; then
-    read -p "Create ROADMAP.md? (y/N) " -n 1 -r
+    read -p "Create ROADMAP.md for long-term planning? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         copy_with_placeholders "$FRAMEWORK_DIR/templates/ROADMAP.md" "$TARGET_DIR/ROADMAP.md"
@@ -133,11 +142,24 @@ fi
 echo ""
 echo -e "${GREEN}Setup complete!${NC}"
 echo ""
-echo "Next steps:"
-echo "1. Edit CLAUDE.md to add your project-specific commands and structure"
-echo "2. Edit CONTINUITY.md to add your initial task queue"
-echo "3. Run 'claude' in your project directory to start working"
+echo -e "${BLUE}Files created:${NC}"
+echo "  AGENTS.md      - Industry-standard AI context (works with all tools)"
+echo "  CONTINUITY.md  - Task queue and session state"
+echo "  PROGRESS.md    - Session-by-session progress tracking"
+echo "  CLAUDE.md      - Claude Code specific instructions"
+echo "  .claude/       - Orchestrator and agent definitions"
+echo "  .plans/        - Implementation plan templates"
 echo ""
-echo "To start the orchestrator:"
+echo -e "${BLUE}Next steps:${NC}"
+echo "1. Edit AGENTS.md to add your project context (commands, conventions)"
+echo "2. Edit CONTINUITY.md to add your initial task queue"
+echo "3. Start working with your preferred AI tool"
+echo ""
+echo -e "${BLUE}With Claude Code:${NC}"
+echo "  cd \"$TARGET_DIR\""
 echo "  claude --dangerously-skip-permissions"
-echo "  Then type: start orchestrator"
+echo "  # Type: start orchestrator"
+echo ""
+echo -e "${BLUE}With other tools:${NC}"
+echo "  Open the project in Cursor, Copilot, or your preferred AI tool."
+echo "  The AGENTS.md file will automatically provide context."
